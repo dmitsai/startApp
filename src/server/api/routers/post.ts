@@ -8,7 +8,8 @@ import {
 
 export const postRouter = createTRPCRouter({
 	hello: publicProcedure
-		.input(z.object({ text: z.string() }))
+		.meta({ description: "Тестовая процедура для проверки работы API. Возвращает приветствие с переданным текстом." })
+		.input(z.object({ text: z.string().describe("Текст для приветствия") }))
 		.query(({ input }) => {
 			return {
 				greeting: `Hello ${input.text}`,
@@ -16,7 +17,8 @@ export const postRouter = createTRPCRouter({
 		}),
 
 	create: protectedProcedure
-		.input(z.object({ name: z.string().min(1) }))
+		.meta({ description: "Создание нового поста. Требует авторизации." })
+		.input(z.object({ name: z.string().min(1).describe("Название поста") }))
 		.mutation(async ({ ctx, input }) => {
 			return ctx.db.post.create({
 				data: {
@@ -26,16 +28,20 @@ export const postRouter = createTRPCRouter({
 			});
 		}),
 
-	getLatest: protectedProcedure.query(async ({ ctx }) => {
-		const post = await ctx.db.post.findFirst({
-			orderBy: { createdAt: "desc" },
-			where: { createdBy: { id: ctx.session.user.id } },
-		});
+	getLatest: protectedProcedure
+		.meta({ description: "Получение последнего поста текущего пользователя. Возвращает null, если постов нет." })
+		.query(async ({ ctx }) => {
+			const post = await ctx.db.post.findFirst({
+				orderBy: { createdAt: "desc" },
+				where: { createdBy: { id: ctx.session.user.id } },
+			});
 
-		return post ?? null;
-	}),
+			return post ?? null;
+		}),
 
-	getSecretMessage: protectedProcedure.query(() => {
-		return "you can now see this secret message!";
-	}),
+	getSecretMessage: protectedProcedure
+		.meta({ description: "Получение секретного сообщения. Доступно только авторизованным пользователям." })
+		.query(() => {
+			return "you can now see this secret message!";
+		}),
 });

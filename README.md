@@ -2,6 +2,44 @@
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
+## 🚀 Quick Start
+
+### 1. Запуск базы данных
+
+**На Windows:**
+1. Убедитесь, что Docker Desktop установлен и запущен
+2. Запустите скрипт:
+   ```powershell
+   .\start-database.ps1
+   ```
+
+**Или вручную через Docker:**
+```bash
+docker run -d --name start-app-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=start-app -p 5432:5432 postgres:latest
+```
+
+**На Linux/macOS:**
+```bash
+./start-database.sh
+```
+
+### 2. Применение миграций
+
+```bash
+npm run db:push
+# или
+npm run db:generate
+```
+
+### 3. Запуск приложения
+
+```bash
+npm run dev
+```
+
+Приложение будет доступно на `http://localhost:3000`
+API документация (trpc-ui) доступна на `http://localhost:3000/api/panel` (только в режиме разработки)
+
 ## What's next? How do I make an app with this?
 
 We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.

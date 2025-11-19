@@ -93,14 +93,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.PostScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  createdById: 'createdById'
-};
-
 exports.Prisma.AccountScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -124,18 +116,117 @@ exports.Prisma.SessionScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.VerificationTokenScalarFieldEnum = {
+  identifier: 'identifier',
+  token: 'token',
+  expires: 'expires'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   emailVerified: 'emailVerified',
-  image: 'image'
+  image: 'image',
+  password: 'password',
+  bio: 'bio',
+  cvUrl: 'cvUrl',
+  role: 'role',
+  location: 'location',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
-exports.Prisma.VerificationTokenScalarFieldEnum = {
-  identifier: 'identifier',
-  token: 'token',
-  expires: 'expires'
+exports.Prisma.TechnologyTagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  category: 'category',
+  description: 'description',
+  icon: 'icon',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserTechnologyScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  technologyId: 'technologyId',
+  grade: 'grade',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProjectScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  goals: 'goals',
+  tasks: 'tasks',
+  type: 'type',
+  status: 'status',
+  roles: 'roles',
+  requirements: 'requirements',
+  contacts: 'contacts',
+  timeline: 'timeline',
+  teamSize: 'teamSize',
+  currentTeamSize: 'currentTeamSize',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  creatorId: 'creatorId'
+};
+
+exports.Prisma.ProjectTechnologyScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  technologyId: 'technologyId',
+  required: 'required',
+  minGrade: 'minGrade',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ProjectRoleScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  description: 'description',
+  requirements: 'requirements',
+  responsibilities: 'responsibilities',
+  filled: 'filled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProjectMemberScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  roleId: 'roleId',
+  role: 'role',
+  joinedAt: 'joinedAt'
+};
+
+exports.Prisma.ApplicationScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  message: 'message',
+  matchScore: 'matchScore',
+  isValid: 'isValid',
+  scoreBreakdown: 'scoreBreakdown',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RecommendationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  projectId: 'projectId',
+  score: 'score',
+  reason: 'reason',
+  viewed: 'viewed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -152,14 +243,38 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.ProjectType = exports.$Enums.ProjectType = {
+  EDUCATIONAL: 'EDUCATIONAL',
+  COMMERCIAL: 'COMMERCIAL'
+};
 
+exports.ProjectStatus = exports.$Enums.ProjectStatus = {
+  DRAFT: 'DRAFT',
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CLOSED: 'CLOSED'
+};
+
+exports.ApplicationStatus = exports.$Enums.ApplicationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED'
+};
 
 exports.Prisma.ModelName = {
-  Post: 'Post',
   Account: 'Account',
   Session: 'Session',
+  VerificationToken: 'VerificationToken',
   User: 'User',
-  VerificationToken: 'VerificationToken'
+  TechnologyTag: 'TechnologyTag',
+  UserTechnology: 'UserTechnology',
+  Project: 'Project',
+  ProjectTechnology: 'ProjectTechnology',
+  ProjectRole: 'ProjectRole',
+  ProjectMember: 'ProjectMember',
+  Application: 'Application',
+  Recommendation: 'Recommendation'
 };
 /**
  * Create the Client
@@ -209,13 +324,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below\n  // Further reading:\n  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema\n  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Post {\n  id        Int      @id @default(autoincrement())\n  name      String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  createdBy   User   @relation(fields: [createdById], references: [id])\n  createdById String\n\n  @@index([name])\n}\n\n// Necessary for Next auth\nmodel Account {\n  id                       String  @id @default(cuid())\n  userId                   String\n  type                     String\n  provider                 String\n  providerAccountId        String\n  refresh_token            String? // @db.Text\n  access_token             String? // @db.Text\n  expires_at               Int?\n  token_type               String?\n  scope                    String?\n  id_token                 String? // @db.Text\n  session_state            String?\n  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  refresh_token_expires_in Int?\n\n  @@unique([provider, providerAccountId])\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique\n  userId       String\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel User {\n  id            String    @id @default(cuid())\n  name          String?\n  email         String?   @unique\n  emailVerified DateTime?\n  image         String?\n  accounts      Account[]\n  sessions      Session[]\n  posts         Post[]\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n}\n",
-  "inlineSchemaHash": "dd9a6edd7dcf3768e8fd246695361ce51823871115a517c30ff53e4d5bffa20b",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below\n  // Further reading:\n  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema\n  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string\n  url      = env(\"DATABASE_URL\")\n}\n\n// ============================================\n// NextAuth Models (Authentication)\n// ============================================\n\nmodel Account {\n  id                       String  @id @default(cuid())\n  userId                   String\n  type                     String\n  provider                 String\n  providerAccountId        String\n  refresh_token            String? // @db.Text\n  access_token             String? // @db.Text\n  expires_at               Int?\n  token_type               String?\n  scope                    String?\n  id_token                 String? // @db.Text\n  session_state            String?\n  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  refresh_token_expires_in Int?\n\n  @@unique([provider, providerAccountId])\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique\n  userId       String\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n}\n\n// ============================================\n// Core Models (StartApp Domain)\n// ============================================\n\nmodel User {\n  id            String    @id @default(cuid())\n  name          String?\n  email         String?   @unique\n  emailVerified DateTime?\n  image         String?\n  password      String? // Хешированный пароль (для email/password авторизации)\n\n  // Extended profile fields\n  bio      String? // Краткая биография\n  cvUrl    String? // Ссылка на резюме/CV\n  role     String? // Роль (Full-Stack Developer, Frontend Developer и т.д.)\n  location String? // Локация пользователя\n\n  // Timestamps\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Relations\n  accounts        Account[]\n  sessions        Session[]\n  projectsCreated Project[]        @relation(\"ProjectCreator\")\n  applications    Application[]\n  technologies    UserTechnology[]\n  projectMembers  ProjectMember[]\n  recommendations Recommendation[]\n\n  @@index([email])\n  @@index([name])\n}\n\n// ============================================\n// Technology Models\n// ============================================\n\nmodel TechnologyTag {\n  id          String  @id @default(cuid())\n  name        String  @unique // Название технологии (React, Node.js, Python и т.д.)\n  category    String? // Категория (frontend, backend, database, tools, etc.)\n  description String? // Краткое описание\n  icon        String? // Иконка или эмодзи\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Relations\n  userTechnologies    UserTechnology[]\n  projectTechnologies ProjectTechnology[]\n\n  @@index([name])\n  @@index([category])\n}\n\nmodel UserTechnology {\n  id           String @id @default(cuid())\n  userId       String\n  technologyId String\n  grade        Int    @default(0) // Грейд 0-10\n  // 0 - хочу выучить\n  // 1-3 - базовые знания\n  // 4-6 - средний уровень\n  // 7-9 - продвинутый уровень\n  // 10 - углубленное знание\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Relations\n  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  technology TechnologyTag @relation(fields: [technologyId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, technologyId])\n  @@index([userId])\n  @@index([technologyId])\n  @@index([grade])\n}\n\n// ============================================\n// Project Models\n// ============================================\n\nenum ProjectType {\n  EDUCATIONAL // Учебный проект\n  COMMERCIAL // Коммерческий проект\n}\n\nenum ProjectStatus {\n  DRAFT // Черновик\n  OPEN // Открыт для откликов\n  IN_PROGRESS // В работе\n  COMPLETED // Завершен\n  CLOSED // Закрыт\n}\n\nmodel Project {\n  id          String        @id @default(cuid())\n  title       String // Название проекта\n  description String // Описание проекта\n  goals       String? // Цели проекта\n  tasks       String? // Задачи проекта\n  type        ProjectType   @default(EDUCATIONAL) // Тип проекта\n  status      ProjectStatus @default(DRAFT) // Статус проекта\n\n  // Паспорт проекта\n  roles        String? // Описание ролей в команде (JSON или текст)\n  requirements String? // Требования к участникам\n  contacts     String? // Контактная информация\n  timeline     String? // Сроки и этапы проекта\n\n  // Team info\n  teamSize        Int @default(1) // Размер команды\n  currentTeamSize Int @default(1) // Текущий размер команды\n\n  // Timestamps\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Relations\n  creatorId       String\n  creator         User                @relation(\"ProjectCreator\", fields: [creatorId], references: [id], onDelete: Cascade)\n  technologies    ProjectTechnology[]\n  applications    Application[]\n  members         ProjectMember[]\n  rolesList       ProjectRole[]\n  recommendations Recommendation[]\n\n  @@index([creatorId])\n  @@index([status])\n  @@index([type])\n  @@index([createdAt])\n}\n\nmodel ProjectTechnology {\n  id           String  @id @default(cuid())\n  projectId    String\n  technologyId String\n  required     Boolean @default(true) // Обязательна ли технология\n  minGrade     Int? // Минимальный требуемый грейд (0-10)\n\n  createdAt DateTime @default(now())\n\n  // Relations\n  project    Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)\n  technology TechnologyTag @relation(fields: [technologyId], references: [id], onDelete: Cascade)\n\n  @@unique([projectId, technologyId])\n  @@index([projectId])\n  @@index([technologyId])\n}\n\nmodel ProjectRole {\n  id               String  @id @default(cuid())\n  projectId        String\n  title            String // Название роли (Frontend Developer, Backend Developer и т.д.)\n  description      String? // Описание роли\n  requirements     String? // Требования к роли\n  responsibilities String? // Обязанности\n  filled           Boolean @default(false) // Заполнена ли роль\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Relations\n  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)\n\n  @@index([projectId])\n  @@index([filled])\n}\n\nmodel ProjectMember {\n  id        String  @id @default(cuid())\n  projectId String\n  userId    String\n  roleId    String? // Связь с ProjectRole (если есть)\n  role      String? // Название роли (если не используется ProjectRole)\n\n  // Timestamps\n  joinedAt DateTime @default(now())\n\n  // Relations\n  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)\n  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([projectId, userId])\n  @@index([projectId])\n  @@index([userId])\n}\n\n// ============================================\n// Application Models\n// ============================================\n\nenum ApplicationStatus {\n  PENDING // Ожидание рассмотрения\n  ACCEPTED // Принят\n  REJECTED // Отклонен\n}\n\nmodel Application {\n  id        String @id @default(cuid())\n  projectId String\n  userId    String\n  message   String // Сопроводительное письмо\n\n  // Оценка соответствия\n  matchScore Float? // Оценка подходящности (0-100)\n  isValid    Boolean @default(true) // Валидность участника (соответствует требованиям)\n\n  // Детальная оценка (можно хранить как JSON)\n  scoreBreakdown String? // JSON: { technologies: 90, experience: 80, availability: 85 }\n\n  status ApplicationStatus @default(PENDING)\n\n  // Timestamps\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Relations\n  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)\n  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([projectId, userId]) // Один пользователь может откликнуться на проект только один раз\n  @@index([projectId])\n  @@index([userId])\n  @@index([status])\n  @@index([matchScore])\n}\n\n// ============================================\n// Recommendation Models\n// ============================================\n\nmodel Recommendation {\n  id        String  @id @default(cuid())\n  userId    String\n  projectId String\n  score     Float // Оценка релевантности (0-100)\n  reason    String? // Обоснование рекомендации\n  viewed    Boolean @default(false) // Просмотрена ли рекомендация\n\n  // Timestamps\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Relations\n  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, projectId]) // Одна рекомендация на пару пользователь-проект\n  @@index([userId])\n  @@index([projectId])\n  @@index([score])\n  @@index([viewed])\n}\n",
+  "inlineSchemaHash": "6eb3a7dad48d70c1fd15f1ca6f92f975a85b7e1936c1f1c813ccbe76e023f748",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PostToUser\"},{\"name\":\"createdById\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Account\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerAccountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refresh_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"access_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires_at\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"token_type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"scope\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"id_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"session_state\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AccountToUser\"},{\"name\":\"refresh_token_expires_in\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sessionToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accounts\",\"kind\":\"object\",\"type\":\"Account\",\"relationName\":\"AccountToUser\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"posts\",\"kind\":\"object\",\"type\":\"Post\",\"relationName\":\"PostToUser\"}],\"dbName\":null},\"VerificationToken\":{\"fields\":[{\"name\":\"identifier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Account\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerAccountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refresh_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"access_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires_at\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"token_type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"scope\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"id_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"session_state\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AccountToUser\"},{\"name\":\"refresh_token_expires_in\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sessionToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"}],\"dbName\":null},\"VerificationToken\":{\"fields\":[{\"name\":\"identifier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bio\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cvUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"location\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"accounts\",\"kind\":\"object\",\"type\":\"Account\",\"relationName\":\"AccountToUser\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"projectsCreated\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectCreator\"},{\"name\":\"applications\",\"kind\":\"object\",\"type\":\"Application\",\"relationName\":\"ApplicationToUser\"},{\"name\":\"technologies\",\"kind\":\"object\",\"type\":\"UserTechnology\",\"relationName\":\"UserToUserTechnology\"},{\"name\":\"projectMembers\",\"kind\":\"object\",\"type\":\"ProjectMember\",\"relationName\":\"ProjectMemberToUser\"},{\"name\":\"recommendations\",\"kind\":\"object\",\"type\":\"Recommendation\",\"relationName\":\"RecommendationToUser\"}],\"dbName\":null},\"TechnologyTag\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"icon\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"userTechnologies\",\"kind\":\"object\",\"type\":\"UserTechnology\",\"relationName\":\"TechnologyTagToUserTechnology\"},{\"name\":\"projectTechnologies\",\"kind\":\"object\",\"type\":\"ProjectTechnology\",\"relationName\":\"ProjectTechnologyToTechnologyTag\"}],\"dbName\":null},\"UserTechnology\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"technologyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"grade\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToUserTechnology\"},{\"name\":\"technology\",\"kind\":\"object\",\"type\":\"TechnologyTag\",\"relationName\":\"TechnologyTagToUserTechnology\"}],\"dbName\":null},\"Project\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"goals\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tasks\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"ProjectType\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ProjectStatus\"},{\"name\":\"roles\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"requirements\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"contacts\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timeline\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"teamSize\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"currentTeamSize\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"creatorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"creator\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ProjectCreator\"},{\"name\":\"technologies\",\"kind\":\"object\",\"type\":\"ProjectTechnology\",\"relationName\":\"ProjectToProjectTechnology\"},{\"name\":\"applications\",\"kind\":\"object\",\"type\":\"Application\",\"relationName\":\"ApplicationToProject\"},{\"name\":\"members\",\"kind\":\"object\",\"type\":\"ProjectMember\",\"relationName\":\"ProjectToProjectMember\"},{\"name\":\"rolesList\",\"kind\":\"object\",\"type\":\"ProjectRole\",\"relationName\":\"ProjectToProjectRole\"},{\"name\":\"recommendations\",\"kind\":\"object\",\"type\":\"Recommendation\",\"relationName\":\"ProjectToRecommendation\"}],\"dbName\":null},\"ProjectTechnology\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"technologyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"required\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"minGrade\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToProjectTechnology\"},{\"name\":\"technology\",\"kind\":\"object\",\"type\":\"TechnologyTag\",\"relationName\":\"ProjectTechnologyToTechnologyTag\"}],\"dbName\":null},\"ProjectRole\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"requirements\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"responsibilities\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filled\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToProjectRole\"}],\"dbName\":null},\"ProjectMember\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"roleId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"joinedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToProjectMember\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ProjectMemberToUser\"}],\"dbName\":null},\"Application\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"message\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"matchScore\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"isValid\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"scoreBreakdown\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ApplicationStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ApplicationToProject\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ApplicationToUser\"}],\"dbName\":null},\"Recommendation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"score\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"viewed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RecommendationToUser\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToRecommendation\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

@@ -5,6 +5,10 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+	sassOptions: {
+		silenceDeprecations: ['import'],
+	},
+};
 
 export default config;

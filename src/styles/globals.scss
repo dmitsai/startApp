@@ -1,0 +1,239 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+	
+	--color-ice-cold: #a0d2eb;
+	--color-freeze-purple: #e5eaf5;
+	--color-medium-purple: #d0bdf4;
+	--color-purple-pain: #8458b3;
+	--color-heavy-purple: #a28089;
+}
+
+:root,
+html,
+html[data-theme='light'] {
+	/* Цвета палитры для использования в градиентах */
+	--ice-cold: 160, 210, 235;
+	--freeze-purple: 229, 234, 245;
+	--medium-purple: 208, 189, 244;
+	--purple-pain: 132, 88, 179;
+	--heavy-purple: 162, 128, 137;
+
+	/* Семантические цвета (используют запятые для rgb()) */
+	--primary: 132, 88, 179;
+	--primary-hover: 112, 68, 159;
+	--primary-active: 152, 108, 199;
+
+	--secondary: 208, 189, 244;
+	--secondary-hover: 188, 169, 224;
+	--secondary-active: 228, 209, 255;
+
+	--accent: 160, 210, 235;
+	--accent-hover: 140, 190, 215;
+	--accent-active: 180, 230, 255;
+
+	/* Фоны */
+	--background: 255, 255, 255;
+	--surface: 229, 234, 245;
+	--surface-secondary: 249, 250, 251;
+	--surface-tertiary: 243, 244, 246;
+
+	/* Тексты */
+	--text: 17, 24, 39;
+	--text-secondary: 75, 85, 99;
+	--text-tertiary: 156, 163, 175;
+
+	/* Границы */
+	--border: 229, 231, 235;
+	--border-hover: 209, 213, 219;
+
+	/* Состояния */
+	--success: 34, 197, 94;
+	--warning: 234, 179, 8;
+	--error: 239, 68, 68;
+	--info: 59, 130, 246;
+
+	/* Наложения */
+	--overlay: 0 0 0;
+	--shadow: 0 0 0;
+}
+
+html[data-theme='dark'] {
+	/* Цвета палитры (не меняются в темной теме) */
+	--ice-cold: 160, 210, 235;
+	--freeze-purple: 229, 234, 245;
+	--medium-purple: 208, 189, 244;
+	--purple-pain: 132, 88, 179;
+	--heavy-purple: 162, 128, 137;
+
+	/* Семантические цвета (адаптированные для темной темы) */
+	--primary: 208, 189, 244;
+	--primary-hover: 228, 209, 255;
+	--primary-active: 188, 169, 224;
+
+	--secondary: 162, 128, 137;
+	--secondary-hover: 182, 148, 157;
+	--secondary-active: 142, 108, 117;
+
+	--accent: 160, 210, 235;
+	--accent-hover: 180, 230, 255;
+	--accent-active: 140, 190, 215;
+
+	/* Фоны (темные) */
+	--background: 17, 24, 39;
+	--surface: 31, 41, 55;
+	--surface-secondary: 55, 65, 81;
+	--surface-tertiary: 75, 85, 99;
+
+	/* Тексты (светлые) */
+	--text: 249, 250, 251;
+	--text-secondary: 209, 213, 219;
+	--text-tertiary: 156, 163, 175;
+
+	/* Границы */
+	--border: 55, 65, 81;
+	--border-hover: 75, 85, 99;
+
+	/* Состояния (ярче для темной темы) */
+	--success: 74, 222, 128;
+	--warning: 250, 204, 21;
+	--error: 248, 113, 113;
+	--info: 96, 165, 250;
+
+	/* Наложения */
+	--overlay: 0, 0, 0;
+	--shadow: 0, 0, 0;
+}
+
+@layer base {
+	body {
+		background-color: rgb(var(--background));
+		color: rgb(var(--text));
+		transition: background-color 300ms, color 300ms;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	* {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
+
+@layer components {
+	.btn-primary {
+		background-color: rgb(var(--primary));
+		color: white;
+		padding: 0.5rem 1rem;
+		border-radius: 0.5rem;
+		transition: background-color 150ms;
+
+		&:hover {
+			background-color: rgb(var(--primary-hover));
+		}
+
+		&:active {
+			background-color: rgb(var(--primary-active));
+		}
+	}
+}
+
+@layer utilities {
+	/* Семантические цвета фона */
+	.bg-primary { background-color: rgb(var(--primary)); }
+	.bg-primary-hover { background-color: rgb(var(--primary-hover)); }
+	.bg-primary-active { background-color: rgb(var(--primary-active)); }
+	
+	.bg-secondary { background-color: rgb(var(--secondary)); }
+	.bg-secondary-hover { background-color: rgb(var(--secondary-hover)); }
+	.bg-secondary-active { background-color: rgb(var(--secondary-active)); }
+	
+	.bg-accent { background-color: rgb(var(--accent)); }
+	.bg-accent-hover { background-color: rgb(var(--accent-hover)); }
+	.bg-accent-active { background-color: rgb(var(--accent-active)); }
+	
+	.bg-background { background-color: rgb(var(--background)); }
+	.bg-surface { background-color: rgb(var(--surface)); }
+	.bg-surface-secondary { background-color: rgb(var(--surface-secondary)); }
+	.bg-surface-tertiary { background-color: rgb(var(--surface-tertiary)); }
+	
+	/* Цвета состояний */
+	.bg-success { background-color: rgb(var(--success)); }
+	.bg-warning { background-color: rgb(var(--warning)); }
+	.bg-error { background-color: rgb(var(--error)); }
+	.bg-info { background-color: rgb(var(--info)); }
+	
+	/* Цвета текста */
+	.text-text { color: rgb(var(--text)); }
+	.text-text-secondary { color: rgb(var(--text-secondary)); }
+	.text-text-tertiary { color: rgb(var(--text-tertiary)); }
+	
+	/* Цвета границ */
+	.border-border { border-color: rgb(var(--border)); }
+	.border-border-hover { border-color: rgb(var(--border-hover)); }
+	
+	/* Скроллбары */
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	.custom-scrollbar {
+		&::-webkit-scrollbar {
+			width: 8px;
+			height: 8px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: rgb(var(--surface));
+			border-radius: 4px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: rgb(var(--border));
+			border-radius: 4px;
+
+			&:hover {
+				background: rgb(var(--border-hover));
+			}
+		}
+	}
+
+	/* Анимации */
+	.fade-in {
+		animation: fadeIn 300ms ease-in-out;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	/* Градиенты */
+	.gradient-purple {
+		background: linear-gradient(
+			135deg,
+			rgb(var(--purple-pain)),
+			rgb(var(--medium-purple))
+		);
+	}
+
+	.gradient-cool {
+		background: linear-gradient(
+			135deg,
+			rgb(var(--ice-cold)),
+			rgb(var(--freeze-purple))
+		);
+	}
+}
