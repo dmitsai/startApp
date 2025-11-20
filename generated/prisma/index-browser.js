@@ -121,14 +121,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.PostScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  createdById: 'createdById'
-};
-
 exports.Prisma.AccountScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -152,18 +144,117 @@ exports.Prisma.SessionScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.VerificationTokenScalarFieldEnum = {
+  identifier: 'identifier',
+  token: 'token',
+  expires: 'expires'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   emailVerified: 'emailVerified',
-  image: 'image'
+  image: 'image',
+  password: 'password',
+  bio: 'bio',
+  cvUrl: 'cvUrl',
+  role: 'role',
+  location: 'location',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
-exports.Prisma.VerificationTokenScalarFieldEnum = {
-  identifier: 'identifier',
-  token: 'token',
-  expires: 'expires'
+exports.Prisma.TechnologyTagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  category: 'category',
+  description: 'description',
+  icon: 'icon',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserTechnologyScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  technologyId: 'technologyId',
+  grade: 'grade',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProjectScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  goals: 'goals',
+  tasks: 'tasks',
+  type: 'type',
+  status: 'status',
+  roles: 'roles',
+  requirements: 'requirements',
+  contacts: 'contacts',
+  timeline: 'timeline',
+  teamSize: 'teamSize',
+  currentTeamSize: 'currentTeamSize',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  creatorId: 'creatorId'
+};
+
+exports.Prisma.ProjectTechnologyScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  technologyId: 'technologyId',
+  required: 'required',
+  minGrade: 'minGrade',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ProjectRoleScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  description: 'description',
+  requirements: 'requirements',
+  responsibilities: 'responsibilities',
+  filled: 'filled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProjectMemberScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  roleId: 'roleId',
+  role: 'role',
+  joinedAt: 'joinedAt'
+};
+
+exports.Prisma.ApplicationScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  message: 'message',
+  matchScore: 'matchScore',
+  isValid: 'isValid',
+  scoreBreakdown: 'scoreBreakdown',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RecommendationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  projectId: 'projectId',
+  score: 'score',
+  reason: 'reason',
+  viewed: 'viewed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -180,14 +271,38 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.ProjectType = exports.$Enums.ProjectType = {
+  EDUCATIONAL: 'EDUCATIONAL',
+  COMMERCIAL: 'COMMERCIAL'
+};
 
+exports.ProjectStatus = exports.$Enums.ProjectStatus = {
+  DRAFT: 'DRAFT',
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CLOSED: 'CLOSED'
+};
+
+exports.ApplicationStatus = exports.$Enums.ApplicationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED'
+};
 
 exports.Prisma.ModelName = {
-  Post: 'Post',
   Account: 'Account',
   Session: 'Session',
+  VerificationToken: 'VerificationToken',
   User: 'User',
-  VerificationToken: 'VerificationToken'
+  TechnologyTag: 'TechnologyTag',
+  UserTechnology: 'UserTechnology',
+  Project: 'Project',
+  ProjectTechnology: 'ProjectTechnology',
+  ProjectRole: 'ProjectRole',
+  ProjectMember: 'ProjectMember',
+  Application: 'Application',
+  Recommendation: 'Recommendation'
 };
 
 /**

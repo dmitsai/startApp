@@ -2,74 +2,313 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
-    output   = "../generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// ============================================
+// NextAuth Models (Authentication)
+// ============================================
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
-// Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? // @db.Text
+  access_token             String? // @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? // @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token_expires_in Int?
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+// ============================================
+// Core Models (StartApp Domain)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String? // Хешированный пароль (для email/password авторизации)
+
+  // Extended profile fields
+  bio      String? // Краткая биография
+  cvUrl    String? // Ссылка на резюме/CV
+  role     String? // Роль (Full-Stack Developer, Frontend Developer и т.д.)
+  location String? // Локация пользователя
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  accounts        Account[]
+  sessions        Session[]
+  projectsCreated Project[]        @relation("ProjectCreator")
+  applications    Application[]
+  technologies    UserTechnology[]
+  projectMembers  ProjectMember[]
+  recommendations Recommendation[]
+
+  @@index([email])
+  @@index([name])
+}
+
+// ============================================
+// Technology Models
+// ============================================
+
+model TechnologyTag {
+  id          String  @id @default(cuid())
+  name        String  @unique // Название технологии (React, Node.js, Python и т.д.)
+  category    String? // Категория (frontend, backend, database, tools, etc.)
+  description String? // Краткое описание
+  icon        String? // Иконка или эмодзи
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userTechnologies    UserTechnology[]
+  projectTechnologies ProjectTechnology[]
+
+  @@index([name])
+  @@index([category])
+}
+
+model UserTechnology {
+  id           String @id @default(cuid())
+  userId       String
+  technologyId String
+  grade        Int    @default(0) // Грейд 0-10
+  // 0 - хочу выучить
+  // 1-3 - базовые знания
+  // 4-6 - средний уровень
+  // 7-9 - продвинутый уровень
+  // 10 - углубленное знание
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  technology TechnologyTag @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, technologyId])
+  @@index([userId])
+  @@index([technologyId])
+  @@index([grade])
+}
+
+// ============================================
+// Project Models
+// ============================================
+
+enum ProjectType {
+  EDUCATIONAL // Учебный проект
+  COMMERCIAL // Коммерческий проект
+}
+
+enum ProjectStatus {
+  DRAFT // Черновик
+  OPEN // Открыт для откликов
+  IN_PROGRESS // В работе
+  COMPLETED // Завершен
+  CLOSED // Закрыт
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String // Название проекта
+  description String // Описание проекта
+  goals       String? // Цели проекта
+  tasks       String? // Задачи проекта
+  type        ProjectType   @default(EDUCATIONAL) // Тип проекта
+  status      ProjectStatus @default(DRAFT) // Статус проекта
+
+  // Паспорт проекта
+  roles        String? // Описание ролей в команде (JSON или текст)
+  requirements String? // Требования к участникам
+  contacts     String? // Контактная информация
+  timeline     String? // Сроки и этапы проекта
+
+  // Team info
+  teamSize        Int @default(1) // Размер команды
+  currentTeamSize Int @default(1) // Текущий размер команды
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  creatorId       String
+  creator         User                @relation("ProjectCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  technologies    ProjectTechnology[]
+  applications    Application[]
+  members         ProjectMember[]
+  rolesList       ProjectRole[]
+  recommendations Recommendation[]
+
+  @@index([creatorId])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model ProjectTechnology {
+  id           String  @id @default(cuid())
+  projectId    String
+  technologyId String
+  required     Boolean @default(true) // Обязательна ли технология
+  minGrade     Int? // Минимальный требуемый грейд (0-10)
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  project    Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology TechnologyTag @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, technologyId])
+  @@index([projectId])
+  @@index([technologyId])
+}
+
+model ProjectRole {
+  id               String  @id @default(cuid())
+  projectId        String
+  title            String // Название роли (Frontend Developer, Backend Developer и т.д.)
+  description      String? // Описание роли
+  requirements     String? // Требования к роли
+  responsibilities String? // Обязанности
+  filled           Boolean @default(false) // Заполнена ли роль
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([filled])
+}
+
+model ProjectMember {
+  id        String  @id @default(cuid())
+  projectId String
+  userId    String
+  roleId    String? // Связь с ProjectRole (если есть)
+  role      String? // Название роли (если не используется ProjectRole)
+
+  // Timestamps
+  joinedAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+// ============================================
+// Application Models
+// ============================================
+
+enum ApplicationStatus {
+  PENDING // Ожидание рассмотрения
+  ACCEPTED // Принят
+  REJECTED // Отклонен
+}
+
+model Application {
+  id        String @id @default(cuid())
+  projectId String
+  userId    String
+  message   String // Сопроводительное письмо
+
+  // Оценка соответствия
+  matchScore Float? // Оценка подходящности (0-100)
+  isValid    Boolean @default(true) // Валидность участника (соответствует требованиям)
+
+  // Детальная оценка (можно хранить как JSON)
+  scoreBreakdown String? // JSON: { technologies: 90, experience: 80, availability: 85 }
+
+  status ApplicationStatus @default(PENDING)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId]) // Один пользователь может откликнуться на проект только один раз
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+  @@index([matchScore])
+}
+
+// ============================================
+// Recommendation Models
+// ============================================
+
+model Recommendation {
+  id        String  @id @default(cuid())
+  userId    String
+  projectId String
+  score     Float // Оценка релевантности (0-100)
+  reason    String? // Обоснование рекомендации
+  viewed    Boolean @default(false) // Просмотрена ли рекомендация
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId]) // Одна рекомендация на пару пользователь-проект
+  @@index([userId])
+  @@index([projectId])
+  @@index([score])
+  @@index([viewed])
 }

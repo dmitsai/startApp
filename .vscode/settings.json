@@ -1,0 +1,41 @@
+{
+	"$schema": "vscode://schemas/settings/user",
+	"editor.codeActionsOnSave": {
+	  "quickfix.biome": "explicit",
+	  "source.organizeImports.biome": "never"
+	},
+	"editor.defaultFormatter": "biomejs.biome",
+	"[javascript,typescript,typescriptreact]": {
+	  "editor.defaultFormatter": "biomejs.biome"
+	},
+	"prettier.enable": false,
+	"eslint.enable": false,
+	"editor.formatOnSave": true,
+	"tailwindCSS.classAttributes": [
+	  "class",
+	  "className",
+	  "class:list",
+	  "classList",
+	  "ngClass"
+	],
+	"tailwindCSS.experimental.configFile": "tailwind.config.ts",
+	"tailwindCSS.includeLanguages": {
+	  "typescript": "javascript",
+	  "typescriptreact": "javascript"
+	},
+	"files.associations": {
+	  "*.css": "tailwindcss",
+	  "*.scss": "scss"
+	},
+	"css.customData": [".vscode/tailwind.json"],
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"typescript.preferences.autoImportFileExcludePatterns": [
+	  "next/router.d.ts",
+	  "next/dist/client/router.d.ts"
+	],
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"[typescript]": {
+	  "editor.defaultFormatter": "biomejs.biome"
+	}
+  }
+  
